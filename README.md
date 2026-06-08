@@ -11,6 +11,9 @@ largo del tiempo. Se resuelve numéricamente discretizando el dominio en una mal
 actualizando cada punto en función de sus vecinos. El trabajo consiste en evaluar cómo
 escala esta solución paralela al variar el número de procesos y el tamaño del problema.
 
+> 📖 Para una explicación didáctica de la física, la discretización y
+> cómo se mapea cada concepto a la implementación en C y MPI ver [`docs/heat-equation.md`](docs/heat-equation.md).
+
 ## Objetivos
 
 - **a) PRAM:** elaborar el modelo PRAM del algoritmo y determinar su complejidad teórica.
