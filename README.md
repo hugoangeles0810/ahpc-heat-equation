@@ -22,6 +22,35 @@ escala esta solución paralela al variar el número de procesos y el tamaño del
 - **c) Análisis de performance:** desarrollar software que calcule y grafique las métricas
   (tiempo de ejecución, **speedup**, **eficiencia**) y concluir sobre la escalabilidad.
 
+## Estructura del repositorio
+
+```
+├── src/                 # solvers en C
+│   ├── heat-big.c       # versión serial de referencia
+│   └── heat-mpi-big.c   # versión paralela con MPI
+├── scripts/             # cómo ejecutar / medir el solver
+│   ├── run_local.sh     # smoke test rápido con mpirun (laptop)
+│   ├── benchmark.slurm   # barrido p × n en el clúster (SLURM)
+│   └── collect_results.sh # parsea la salida del solver → CSV
+├── analysis/            # objetivo (c): métricas y gráficas
+│   └── plot_performance.py # CSV → tiempo / speedup / eficiencia
+├── results/             # CSVs y figuras finales (versionados)
+├── docs/                # guía didáctica + figuras
+└── Makefile             # make → bin/heat-big, bin/heat-mpi-big
+```
+
+## Uso
+
+```bash
+make                      # compila ambos binarios en bin/
+scripts/run_local.sh 4    # corre el solver MPI con 4 procesos (local)
+sbatch scripts/benchmark.slurm           # barrido de escalabilidad en el clúster
+python analysis/plot_performance.py      # genera las gráficas desde results/benchmark.csv
+```
+
+> ⚠️ Para barrer el tamaño de problema `n` (objetivo b) hay que parametrizar la
+> malla (`imax`/`kmax`/`itmax`) desde `argv` en los solvers; hoy están fijos.
+
 ## Equipo
 
 - _Hugo Angeles_
