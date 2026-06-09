@@ -17,6 +17,7 @@ escala esta solución paralela al variar el número de procesos y el tamaño del
 ## Objetivos
 
 - **a) PRAM:** elaborar el modelo PRAM del algoritmo y determinar su complejidad teórica.
+  → desarrollado en [`docs/pram-y-complejidad.md`](docs/pram-y-complejidad.md).
 - **b) Mediciones:** medir tiempos de ejecución y compararlos con la complejidad teórica,
   para distinto número de procesos (`p`) y tamaño del problema (`n`).
 - **c) Análisis de performance:** desarrollar software que calcule y grafique las métricas
@@ -36,6 +37,8 @@ escala esta solución paralela al variar el número de procesos y el tamaño del
 │   └── plot_performance.py # CSV → tiempo / speedup / eficiencia
 ├── results/             # CSVs y figuras finales (versionados)
 ├── docs/                # guía didáctica + figuras
+│   ├── heat-equation.md      # física, discretización y mapeo al código
+│   └── pram-y-complejidad.md # objetivo (a): PRAM + complejidad teórica
 └── Makefile             # make → bin/heat-big, bin/heat-mpi-big
 ```
 
