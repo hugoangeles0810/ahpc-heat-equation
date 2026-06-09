@@ -31,10 +31,33 @@ static inline int idxn(int i, int k, int is, int ks, int kinner) {
 int main(int argc, char *argv[])
 {
   int i, k, it;
-  int const print_result = 1;   // 1 or 0 for printing / not printing the result
-  int const imax = 80, kmax = 80, istart = 0, kstart = 0, itmax = 20000;
+  int const istart = 0, kstart = 0;
   int const halo = 1;           // boundary/halo width
   double const eps = 1.e-08;
+
+  // Parameters (with defaults):
+  //   argv[1] = grid size (imax == kmax)
+  //   argv[2] = itmax
+  //   argv[3] = print_result (1 or 0 for printing / not printing the result)
+  int imax = 80, kmax = 80, itmax = 20000;
+  int print_result = 0;
+  if (argc > 1) {
+    imax = kmax = atoi(argv[1]);
+    if (imax <= 0) {
+      fprintf(stderr, "invalid grid size: %s\n", argv[1]);
+      return 1;
+    }
+  }
+  if (argc > 2) {
+    itmax = atoi(argv[2]);
+    if (itmax <= 0) {
+      fprintf(stderr, "invalid itmax: %s\n", argv[2]);
+      return 1;
+    }
+  }
+  if (argc > 3) {
+    print_result = atoi(argv[3]);
+  }
 
   int const is = istart, ie = imax, ks = kstart, ke = kmax;
   int const iouter = ie - is + 1, kouter = ke - ks + 1;
