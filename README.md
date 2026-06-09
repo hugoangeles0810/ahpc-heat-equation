@@ -48,9 +48,6 @@ sbatch scripts/benchmark.slurm           # barrido de escalabilidad en el clúst
 python analysis/plot_performance.py      # genera las gráficas desde results/benchmark.csv
 ```
 
-> ⚠️ Para barrer el tamaño de problema `n` (objetivo b) hay que parametrizar la
-> malla (`imax`/`kmax`/`itmax`) desde `argv` en los solvers; hoy están fijos.
-
 ## Equipo
 
 - _Hugo Angeles_
