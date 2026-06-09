@@ -48,6 +48,23 @@ sbatch scripts/benchmark.slurm           # barrido de escalabilidad en el clúst
 python analysis/plot_performance.py      # genera las gráficas desde results/benchmark.csv
 ```
 
+## Referencias
+
+Material de apoyo a considerar para el objetivo (c) — definición de métricas y
+metodología de medición de performance:
+
+- **[Serial vs. Parallel Programming with MPI — NMSU HPC](https://hpc.nmsu.edu/discovery/mpi/serial-vs-parallel/)**
+  Caso práctico serial vs. MPI: muestra cómo, para problemas pequeños, el overhead
+  de inicialización/comunicación de MPI hace que la versión serial sea más rápida, y
+  cómo la versión paralela gana terreno al crecer `n`. Útil para interpretar por qué
+  el speedup y la eficiencia dependen del tamaño del problema en nuestro barrido `p × n`.
+- **[Measuring performance — LAMMPS docs](https://docs.lammps.org/Speed_measure.html)**
+  Distingue performance serial (velocidad de un proceso) de eficiencia paralela, y
+  define la **eficiencia** como `rendimiento(N procesos) / (rendimiento(1 proceso) × N)`.
+  Discute *strong* vs *weak scaling* y la degradación de la eficiencia al aumentar
+  procesos cuando el trabajo por proceso es pequeño frente a la comunicación — la base
+  metodológica de las métricas que calcula `analysis/plot_performance.py`.
+
 ## Equipo
 
 - _Hugo Angeles_
