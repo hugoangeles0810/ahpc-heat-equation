@@ -331,11 +331,12 @@ int main(int argc, char *argv[])
   }
 
   if (my_rank == 0) {
-   printf("\n!numprocs=idim    iter-   wall clock time  communication part  abort criterion\n");
-   printf(  "!          x kdim ations     [seconds]     method [seconds]    meth. stride [seconds]\n");
-   printf(  "!%6d =%3d x%3d %6d %12.4g      %2d %12.4g    %2d %6d %12.4g\n",
-          numprocs,idim,kdim,it, end_time - start_time,
-                                            1, comm_time, 1, stride, criterion_time);
+    printf("\n%d iterations\n", it);
+    // machine-readable summary row (identical format in heat-big.c):
+    // grid_size,nprocs,idim,kdim,iterations,wall_time_s,comm_time_s,criterion_time_s
+    printf("RESULT,%d,%d,%d,%d,%d,%.6g,%.6g,%.6g\n",
+           imax, numprocs, idim, kdim, it,
+           end_time - start_time, comm_time, criterion_time);
   }
 
   MPI_Type_free(&vertical_border);

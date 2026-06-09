@@ -111,7 +111,8 @@ int main(int argc, char *argv[])
   printf("\nHeat Conduction 2d\n");
   printf("\ndx =%12.4e, dy =%12.4e, dt=%12.4e, eps=%12.4e\n", dx, dy, dt, eps);
 
-  clock_t t_start = clock();
+  struct timespec t_start, t_end;
+  clock_gettime(CLOCK_MONOTONIC, &t_start);
 
   // iteration
   for (it = 1; it <= itmax; it++) {
@@ -138,8 +139,9 @@ int main(int argc, char *argv[])
     if (dphimax < eps) break;
   }
 
-  clock_t t_end = clock();
-  double cpu_sec = (double)(t_end - t_start) / CLOCKS_PER_SEC;
+  clock_gettime(CLOCK_MONOTONIC, &t_end);
+  double wall_sec = (t_end.tv_sec - t_start.tv_sec)
+                  + (t_end.tv_nsec - t_start.tv_nsec) * 1.e-9;
 
   if (print_result) {
     printf("   i=");
@@ -155,7 +157,10 @@ int main(int argc, char *argv[])
   }
 
   printf("\n%d iterations\n", it);
-  printf("\nCPU time = %#12.4g sec\n", cpu_sec);
+  // machine-readable summary row (identical format in heat-mpi-big.c):
+  // grid_size,nprocs,idim,kdim,iterations,wall_time_s,comm_time_s,criterion_time_s
+  printf("RESULT,%d,%d,%d,%d,%d,%.6g,%.6g,%.6g\n",
+         imax, 1, 1, 1, it, wall_sec, 0.0, 0.0);
 
   free(phi);
   free(phin);
