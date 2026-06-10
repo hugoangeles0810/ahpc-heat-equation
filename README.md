@@ -80,7 +80,7 @@ en `results/raw/`. Para empezar con un CSV limpio: `rm -f results/benchmark.csv 
 > presupuesto real es de **16 núcleos físicos**. De ahí que `benchmark.slurm` use
 > `--ntasks=16 --hint=nomultithread` (16 núcleos completos, 1 rank por núcleo) y **no**
 > `--exclusive` (reservaría las 64 CPUs lógicas y el job sería rechazado con
-> `QOSMaxCpuPerUserLimit`). El barrido es `PROCS=(1 2 4 8 16)` sobre `NS=(128 256 512 1024)`.
+> `QOSMaxCpuPerUserLimit`).
 
 ## Resultados
 
