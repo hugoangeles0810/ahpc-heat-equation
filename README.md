@@ -35,7 +35,8 @@ escala esta solución paralela al variar el número de procesos y el tamaño del
 │   └── collect_results.sh # parsea la salida del solver → CSV
 ├── analysis/            # objetivo (c): métricas y gráficas
 │   └── plot_performance.py # CSV → tiempo / speedup / eficiencia
-├── results/             # CSVs y figuras finales (versionados)
+├── results/             # un subdirectorio por experimento (CSV + figuras)
+│   └── EXPERIMENTS.md   # bitácora: configuración y hallazgos de cada corrida
 ├── docs/                # guía didáctica + figuras
 │   ├── heat-equation.md      # física, discretización y mapeo al código
 │   └── pram-y-complejidad.md # objetivo (a): PRAM + complejidad teórica
