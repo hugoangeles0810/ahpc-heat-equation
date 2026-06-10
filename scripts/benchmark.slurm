@@ -2,15 +2,21 @@
 #SBATCH --job-name=heat-bench
 #SBATCH --output=results/slurm-%j.out
 #SBATCH --partition=standard
-#SBATCH --nodelist=n003
-#SBATCH --nodes=1
+#SBATCH --nodelist=n003,n005
+#SBATCH --nodes=2
 #SBATCH --ntasks=16
+#SBATCH --ntasks-per-node=8
+#SBATCH --ntasks-per-socket=4
 #SBATCH --hint=nomultithread
 #SBATCH --time=01:00:00
-# Plan A: single-node strong scaling on n003 (homogeneous Xeon Gold 6130).
-# Account cap is cpu=32 logical CPUs, and HT makes the node 64 logical CPUs,
-# so the usable budget is 16 physical cores. --hint=nomultithread gives 16
-# whole cores (1 thread each); no --exclusive (would grab all 64 -> rejected).
+# Plan B: two-node strong scaling on n003+n005 (homogeneous Xeon Gold 6130),
+# 8 physical cores per node (4 per socket). Total 16 cores = 32 logical CPUs,
+# exactly the account cap (cpu=32). --hint=nomultithread gives whole cores;
+# --ntasks-per-socket=4 forces a balanced 4-cores-per-NUMA-domain layout so
+# the ppr placement below has both sockets to fill. No --exclusive (would
+# grab all 64 logical CPUs per node -> rejected with QOSMaxCpuPerUserLimit).
+# vs exp01 (16 ranks on ONE node): here P=16 is 8+8 across two nodes, so the
+# 8->16 step now crosses the network and isolates inter-node MPI cost.
 # ----------------------------------------------------------------------------
 # Scaling sweep for the MPI heat solver.
 #
@@ -33,7 +39,7 @@ set -euo pipefail
 cd "$SLURM_SUBMIT_DIR"
 
 NS=(128 256 512 1024)         # grid sizes (imax=kmax=N)
-PROCS=(1 2 4 8 16)            # MPI process counts (1 rank per physical core; max 16)
+PROCS=(1 2 4 8 16)            # MPI procs (1 rank/core; 1..8 on n003, 16 = 8+8 across n003+n005)
 ITMAX=20000                   # iteration cap (solver stops earlier on convergence)
 BIN="bin/heat-mpi-big"
 CSV="results/benchmark.csv"
@@ -54,7 +60,7 @@ for N in "${NS[@]}"; do
   for P in "${PROCS[@]}"; do
     OUT="$RAW/run_n${N}_p${P}.out"
     echo ">> N=$N P=$P"
-    if mpirun --map-by socket --bind-to core -np "$P" "$BIN" "$N" "$ITMAX" 0 | tee "$OUT"; then
+    if mpirun --map-by ppr:4:socket --bind-to core -np "$P" "$BIN" "$N" "$ITMAX" 0 | tee "$OUT"; then
       scripts/collect_results.sh "$OUT" >> "$CSV"
     else
       echo "!! run N=$N P=$P FAILED, skipping" >&2
