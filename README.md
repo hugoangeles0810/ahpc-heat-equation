@@ -44,12 +44,42 @@ escala esta solución paralela al variar el número de procesos y el tamaño del
 
 ## Uso
 
+### Local (laptop)
+
 ```bash
 make                      # compila ambos binarios en bin/
 scripts/run_local.sh 4    # corre el solver MPI con 4 procesos (local)
-sbatch scripts/benchmark.slurm           # barrido de escalabilidad en el clúster
 python analysis/plot_performance.py      # genera las gráficas desde results/benchmark.csv
 ```
+
+### En el clúster Khipu (UTEC)
+
+El barrido de escalabilidad se ejecuta como un job SLURM en
+[Khipu](https://docs.khipu.utec.edu.pe/). Desde el **nodo de acceso** (el único con
+internet, donde se compila y se envían jobs — nunca se computa ahí):
+
+```bash
+ssh <usuario>@khipu.utec.edu.pe
+git clone git@github.com:hugoangeles0810/ahpc-heat-equation.git   # o: git pull
+cd ahpc-heat-equation
+
+module load gnu12/12.4.0 openmpi4/4.1.6   # toolchain (GCC 12 + OpenMPI 4)
+make mpi                                   # pre-chequeo de compilación (el job también compila)
+
+sbatch scripts/benchmark.slurm             # envía el barrido p × n
+squeue --me                                # monitorea el job (PD pendiente → R corriendo)
+```
+
+Los resultados quedan en `results/benchmark.csv` (una fila por corrida) y la salida cruda
+en `results/raw/`. Para empezar con un CSV limpio: `rm -f results/benchmark.csv results/raw/*`.
+
+> ⚠️ **Configuración fijada a la cuenta `postgrado`.** El job corre en un único nodo
+> homogéneo (`n003`, Xeon Gold 6130). La cuenta tiene un tope de **`cpu=32` CPUs lógicas**
+> y el nodo tiene *hyperthreading* (32 núcleos = 64 CPUs lógicas), por lo que el
+> presupuesto real es de **16 núcleos físicos**. De ahí que `benchmark.slurm` use
+> `--ntasks=16 --hint=nomultithread` (16 núcleos completos, 1 rank por núcleo) y **no**
+> `--exclusive` (reservaría las 64 CPUs lógicas y el job sería rechazado con
+> `QOSMaxCpuPerUserLimit`). El barrido es `PROCS=(1 2 4 8 16)` sobre `NS=(128 256 512 1024)`.
 
 ## Referencias
 
