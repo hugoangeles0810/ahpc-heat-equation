@@ -314,13 +314,15 @@ int main(int argc, char *argv[])
           if (kc == 0) {
               printf("\nprinting the %3dth horizontal block\n", ic);
               printf("               i=");
-              for (i=i_first; i<=i_last; i++) printf(" %4d",i); printf("\n");
+              for (i=i_first; i<=i_last; i++) printf(" %4d",i);
+              printf("\n");
           } else {
             if (print_halo)  printf("\n"); // additional empty line between the processes
           }
           for (k=k_first; k<=k_last; k++) {
               printf("ic=%2d kc=%2d k=%3d", ic, kc, k);
-              for (i=i_first; i<=i_last; i++) printf(" %4.2f", phi[idx(i, k, is, ks, kouter)]); printf("\n");
+              for (i=i_first; i<=i_last; i++) printf(" %4.2f", phi[idx(i, k, is, ks, kouter)]);
+              printf("\n");
           }
         }
         MPI_Barrier(comm); // separate the printing of each block by different processes.
