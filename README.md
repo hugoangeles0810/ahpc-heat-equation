@@ -82,6 +82,19 @@ en `results/raw/`. Para empezar con un CSV limpio: `rm -f results/benchmark.csv 
 > `--exclusive` (reservaría las 64 CPUs lógicas y el job sería rechazado con
 > `QOSMaxCpuPerUserLimit`). El barrido es `PROCS=(1 2 4 8 16)` sobre `NS=(128 256 512 1024)`.
 
+## Resultados
+
+Cada corrida del benchmark vive en su propio subdirectorio de [`results/`](results/),
+con su `benchmark.csv` y las figuras (tiempo / speedup / eficiencia / iteraciones). La
+bitácora [`results/EXPERIMENTS.md`](results/EXPERIMENTS.md) registra cada experimento
+—configuración SBATCH, colocación de procesos y hallazgos:
+
+- **[exp01 — 1 nodo × 16 núcleos](results/exp01-1node-16core/)** — escalado fuerte en un
+  solo nodo (`n003`).
+- **[exp02 — 2 nodos × 8 núcleos](results/exp02-2node-8core/)** — `P=16` se reparte 8+8 y
+  cruza la red; supera al caso de 1 nodo (el solver está limitado por ancho de banda de
+  memoria, así que dos nodos aportan más ancho de banda agregado que el costo de la red).
+
 ## Referencias
 
 Material de apoyo a considerar para el objetivo (c) — definición de métricas y
