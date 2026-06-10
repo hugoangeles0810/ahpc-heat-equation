@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=heat-bench
 #SBATCH --output=results/slurm-%j.out
-#SBATCH --partition=investigacion
-#SBATCH --nodes=1
-#SBATCH --ntasks=16
-#SBATCH --time=00:30:00
+#SBATCH --partition=standard
+#SBATCH --nodelist=n003,n004,n005
+#SBATCH --nodes=3
+#SBATCH --ntasks-per-node=16
+#SBATCH --ntasks=48
+#SBATCH --exclusive
+#SBATCH --time=01:00:00
 # ----------------------------------------------------------------------------
 # Scaling sweep for the MPI heat solver.
 #
@@ -27,7 +30,7 @@ set -euo pipefail
 cd "$SLURM_SUBMIT_DIR"
 
 NS=(128 256 512 1024)         # grid sizes (imax=kmax=N)
-PROCS=(1 2 4 8 16)            # MPI process counts
+PROCS=(1 2 4 8 16 32 48)      # MPI process counts (1..16 = 1 node; 32 = 2 nodes; 48 = 3 nodes)
 ITMAX=20000                   # iteration cap (solver stops earlier on convergence)
 BIN="bin/heat-mpi-big"
 CSV="results/benchmark.csv"
@@ -48,8 +51,11 @@ for N in "${NS[@]}"; do
   for P in "${PROCS[@]}"; do
     OUT="$RAW/run_n${N}_p${P}.out"
     echo ">> N=$N P=$P"
-    mpirun -np "$P" "$BIN" "$N" "$ITMAX" 0 | tee "$OUT"
-    scripts/collect_results.sh "$OUT" >> "$CSV"
+    if mpirun --map-by ppr:8:socket --bind-to core -np "$P" "$BIN" "$N" "$ITMAX" 0 | tee "$OUT"; then
+      scripts/collect_results.sh "$OUT" >> "$CSV"
+    else
+      echo "!! run N=$N P=$P FAILED, skipping" >&2
+    fi
   done
 done
 
