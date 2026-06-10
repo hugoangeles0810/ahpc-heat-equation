@@ -5,9 +5,9 @@
 #SBATCH --nodelist=n003
 #SBATCH --nodes=1
 #SBATCH --ntasks=32
-#SBATCH --exclusive
 #SBATCH --time=00:05:00
-# Account cap: cpu=32 -> one exclusive 32-core node is exactly the limit.
+# No --exclusive: HT makes a 32-core node 64 logical CPUs, but the account
+# cap is cpu=32. So we request 32 task-CPUs (= 16 physical cores under HT).
 # ----------------------------------------------------------------------------
 # Scaling sweep for the MPI heat solver.
 #
